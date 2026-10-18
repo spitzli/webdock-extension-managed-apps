@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Managed Apps</title>
+    <link rel="stylesheet" href="/ui/apps.css" />
+    <script defer src="/ui/apps.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <h1>Managed Apps</h1>
+          <p>Your dedicated applications, together in one place.</p>
+        </div>
+        <button id="refresh" type="button">Refresh status</button>
+      </header>
+      <p id="status" class="notice" role="status" aria-live="polite">
+        Connecting to your project…
+      </p>
+      <section id="apps" aria-label="Your applications"></section>
+      <section id="empty" class="empty" hidden>
+        <h2>No apps connected yet</h2>
+        <p>
+          Your operator provisions a dedicated Tabularium instance through
+          Hosting, then connects it to this project.
+        </p>
+      </section>
+      <footer>
+        <div>
+          <h2>Need another instance?</h2>
+          <p>
+            Ask your operator to provision it through Hosting. This panel
+            manages existing apps.
+          </p>
+        </div>
+        <p class="analytics">
+          Analytics is a separate service powered by shared Umami.
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>

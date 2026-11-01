@@ -1,3 +1,9 @@
+# Reviewed platform-source checks; fixture tests never add runtime credentials.
+FROM oven/bun@sha256:ec06c3b6cea04192ae6770c434f668ca41d343ad19fa6472216c7b48be39c598 AS check
+WORKDIR /app
+COPY . .
+RUN bun install --frozen-lockfile --ignore-scripts && bun run build && bun run test
+
 FROM oven/bun@sha256:ec06c3b6cea04192ae6770c434f668ca41d343ad19fa6472216c7b48be39c598 AS deps
 WORKDIR /app
 COPY package.json bun.lock ./

@@ -2,5 +2,14 @@ node_modules
 .git
 .env*
 *.pem
-tests
 screenshots
+**/node_modules
+.npmrc
+.runtime-test
+.dev-local
+.cache
+/release
+/private
+/secrets
+/data
+**/target

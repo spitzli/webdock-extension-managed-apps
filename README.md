@@ -61,3 +61,9 @@ Required environment:
 Runtime requests require the bearer credential plus a current signed `X-Plugin-Invocation`. The plugin verifies plugin ID, generation, action, project claim format, lifetime and callback origin. The host rechecks live project authority and binding on every `apps` service call. Errors exposed to the UI are generic and contain no provider details.
 
 The iframe uses `sandbox="allow-scripts"`, a one-time nonce handshake and a private MessagePort. It cannot fetch providers, submit forms or open popups. App addresses are plain text; navigation is owned by authenticated Console chrome outside the iframe.
+
+## EU CI
+
+Source pushes and trusted same-repository pull requests run the frozen dependency install, build and unit tests through the dedicated rootless EU builder. External fork PRs cannot run on this persistent trusted runner. No hosted fallback, Docker daemon or provider/customer credentials are used.
+
+The manual `Plugin EU build` workflow can push a checked image candidate by enabling `publish_image`. It records the immutable image/source identity; existing versioned registry manifests and releases are unchanged. A new registry version still requires its proper manifest and signed integrity verification.

@@ -1,0 +1,71 @@
+name: Plugin EU build
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      publish_image:
+        description: Push a checked candidate image without replacing versioned registry releases
+        required: false
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: legacy-plugin-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  check:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ${{ fromJSON(vars.WEBDOCK_PLUGIN_CI_RUNNER) }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Check and test the independent locked source in rootless EU BuildKit
+        env:
+          WEBDOCK_BUILDKIT_ADDR: ${{ vars.WEBDOCK_BUILDKIT_ADDR }}
+          WEBDOCK_BUILDCTL_SHA256: ${{ vars.WEBDOCK_BUILDCTL_SHA256 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export IMAGE_REPOSITORY="ghcr.io/${GITHUB_REPOSITORY,,}"
+          python3 scripts/plugin-release/build_oci.py --check < /dev/null
+  image:
+    needs: check
+    if: github.event_name == 'workflow_dispatch' && inputs.publish_image
+    environment: plugin-image-candidate
+    runs-on: ${{ fromJSON(vars.WEBDOCK_PLUGIN_CI_RUNNER) }}
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Build and push this checked source image
+        id: image
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WEBDOCK_BUILDKIT_ADDR: ${{ vars.WEBDOCK_BUILDKIT_ADDR }}
+          WEBDOCK_BUILDCTL_SHA256: ${{ vars.WEBDOCK_BUILDCTL_SHA256 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export IMAGE_REPOSITORY="ghcr.io/${GITHUB_REPOSITORY,,}"
+          printf '%s' "$GH_TOKEN" | python3 scripts/plugin-release/build_oci.py
+      - name: Record the candidate without changing published registry versions
+        env:
+          IMAGE: ${{ steps.image.outputs.image }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -c 'import json,os; print(json.dumps({"image":os.environ["IMAGE"],"sourceCommit":os.environ["GITHUB_SHA"],"registryRelease":"unchanged"}))' > candidate-image.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: checked-image-${{ github.sha }}
+          path: candidate-image.json
+          if-no-files-found: error
+          retention-days: 30

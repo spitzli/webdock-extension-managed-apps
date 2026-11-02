@@ -1,5 +1,48 @@
 # Managed Apps
 
+![Managed Apps icon](assets/icon.svg)
+
+Operate dedicated applications already connected to your project.
+
+## What you can do
+
+List the existing Tabularium instance, inspect its status and address, and start, stop or restart through Hosting.
+
+## Setup and access
+
+Requires the host apps service, project grants and trusted Console launch links. Provisioning remains in the operator Hosting workflow; the plugin does not create subscriptions or configure application internals.
+
+## Data and security
+
+Core checks project authority, binding and revisions for every operation. No cluster/database credentials or application admin token enters the panel. Stopping retains data according to the underlying Hosting policy.
+
+## Status and limits
+
+Developer alpha. A stock host without the apps service cannot run it; production Console installation is a separate gate. Gallery operations are simulated against a fictional project and contact no real application.
+
+Catalog publication does not activate the plugin, enable public signup or grant
+access to any customer resource. A new presentation release must use a new version;
+previously signed releases and their assets stay immutable.
+
+## Gallery context
+
+The screenshots below show existing local authoring/test views with fictional
+project data. They do not attest a live provider or customer deployment.
+
+## Catalog source
+
+`.tabularium` is the complete catalog-refresh source. It retains the immutable
+runtime image and full protocol/access contract of the currently released
+`0.1.0-alpha.1` and adds the prepared presentation assets. Refresh it only from a
+reviewed immutable source commit. This does not replace signed release assets
+or activate the runtime.
+
+## Technical reference
+
+The retained implementation notes below include platform integration procedures.
+Commands referring to Core, `tools/` or `apps/console` require the [platform source
+checkout](https://github.com/spitzli/webdock); they are not standalone setup steps.
+
 Operate dedicated applications connected to a Webdock project. The initial app is **Tabularium**: view its status and address, then start, stop or restart the instance. Webdock Console provides trusted **Open app** and **Manage hosting** links above the plugin panel.
 
 Provisioning stays in the existing operator Hosting workflow. This extension manages existing instances; it does not provision apps, configure their internal business settings, or manage subscriptions. Shared Umami analytics remains a separate service.
@@ -62,8 +105,8 @@ Runtime requests require the bearer credential plus a current signed `X-Plugin-I
 
 The iframe uses `sandbox="allow-scripts"`, a one-time nonce handshake and a private MessagePort. It cannot fetch providers, submit forms or open popups. App addresses are plain text; navigation is owned by authenticated Console chrome outside the iframe.
 
-## EU CI
+## Blacksmith CI
 
-Source pushes and trusted same-repository pull requests run the frozen dependency install, build and unit tests through the dedicated rootless EU builder. External fork PRs cannot run on this persistent trusted runner. No hosted fallback, Docker daemon or provider/customer credentials are used.
+The Blacksmith GitHub App is installed for the exact 16 Spitzli platform, plugin and SDK repositories. The configured and observed region is `us-west`, under the owner’s EU-only exception for Spitzli’s own GitHub CI. The official managed-builder probe passed with `nofallback: true`. These prepared workflows use only Blacksmith; actual per-repository source checks and publication of the regular workflows remain pending. Provider and customer credentials are not used for source checks, and no builder fallback is allowed.
 
-The manual `Plugin EU build` workflow can push a checked image candidate by enabling `publish_image`. It records the immutable image/source identity; existing versioned registry manifests and releases are unchanged. A new registry version still requires its proper manifest and signed integrity verification.
+The prepared manual `Plugin Blacksmith build` workflow can push a checked image candidate by enabling `publish_image`. It records the immutable image/source identity; existing versioned registry manifests and releases are unchanged. A new registry version still requires its proper manifest and signed integrity verification.
